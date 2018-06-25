@@ -8,8 +8,9 @@ socket.on("disconnect", function () {
 	console.log("disconnect from the server.");
 });
 
+
 socket.emit("createMessage",{
-	to : "dipu@delhi",
+	from : "dipu@delhi",
 	text : "ACCHA!!"
 });
 
