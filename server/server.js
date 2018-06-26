@@ -1,45 +1,30 @@
 const path = require("path");
 const express = require("express");
-const socketIO = require("socket.io")
-const http = require("http")
+const socketIO = require("socket.io");
+const http = require("http");
 
+const {generateMssg} = require("./utils/message.js");
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 var app = express()
 var server = http.createServer(app);
 var io = socketIO(server);
-
+console.log(generateMssg("test","yessss"));
 app.use(express.static(publicPath));
 
 io.on("connection", (socket) => {
 	console.log("New User connected");
 	
-	socket.emit("welcomeMssg", {
-	from : "admin@sabkaBAAP",
-	text : "Welcome to land of Hope - Russia",
- 	createdAt : new Date().getTime()
- 	})
+	socket.emit("welcomeMssg", generateMssg("admin@sabkaBAAP","Welcome to land of Hope - Russia"));
 
-	socket.broadcast.emit("newUserMssg",{
-		from : "admin@sabkaBAAP",
-		text : "New User Joined Frands",
-		joinedAt : new Date().getTime()
-	});
+	socket.broadcast.emit("newUserMssg",generateMssg("admin@sabkaBAAP","New user joined Frands"));
 
 	socket.on("createMessage", (mssg) => {
 		console.log("Message Created  :\n", mssg);
 		
-		socket.broadcast.emit("newMessage",{
-			from : mssg.from,
-			text : mssg.text,
-			createdAt : new Date().getTime()
-		});
+		socket.broadcast.emit("newMessage",generateMssg(mssg.from,mssg.text));
 		/*
-		io.emit("newMessage",{
-			from : mssg.from,
-			text : mssg.text,
-			createdAt : new Date().getTime()
-		});
+		io.emit("newMessage",generateMssg(mssg.from,mssg.text));
 		*/
 	});
 
