@@ -21,3 +21,13 @@ socket.on("newUserMssg" , function (mssg) {
 socket.on("newMessage", function (mssg) {
 	console.log("Recieved this message - ",mssg)
 });
+
+jQuery("#message-form").on("submit",function (e) {
+	e.preventDefault();
+	socket.emit("createMessage",{
+		from : "User",
+		text : jQuery('[name=message]').val()
+	}, function () {
+
+	});
+})
