@@ -21,13 +21,16 @@ io.on("connection", (socket) => {
 
 	socket.on("createMessage", (mssg) => {
 		console.log("Message Created  :\n", mssg);
-		
-		socket.broadcast.emit("newMessage",generateMssg(mssg.from,mssg.text));
+
+		socket.broadcast.emit("newMessage",generateMssg(mssg.from,mssg.text));		
 		/*
 		io.emit("newMessage",generateMssg(mssg.from,mssg.text));
 		*/
 	});
-
+    
+    socket.on("createLocationMessage", (mssg) => {		
+		socket.broadcast.emit("newMessage",generateMssg("User ",`lat : ${mssg.latitude} \n long : ${mssg.longitude}`));
+	});
 	socket.on("disconnect", () => {
 		console.log("And.... 	He's gone!!!! (diconnected)");
 	});	
