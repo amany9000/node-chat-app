@@ -19,13 +19,15 @@ io.on("connection", (socket) => {
 
 	socket.broadcast.emit("newUserMssg",generateMssg("admin@sabkaBAAP","New user joined Frands"));
 
-	socket.on("createMessage", (mssg) => {
+	socket.on("createMessage", (mssg,callback) => {
 		console.log("Message Created  :\n", mssg);
 
 		socket.broadcast.emit("newMessage",generateMssg(mssg.from,mssg.text));		
 		/*
 		io.emit("newMessage",generateMssg(mssg.from,mssg.text));
 		*/
+
+		callback()
 	});
     
     socket.on("createLocationMessage", (mssg) => {		
