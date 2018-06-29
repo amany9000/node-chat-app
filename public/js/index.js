@@ -13,33 +13,41 @@ socket.on("disconnect", function () {
 socket.on("welcomeMssg" ,function (mssg) {
 	console.log("Initial Message from sever - " , mssg);
 
+	var formattedTime = moment(mssg.createdAt).format("h:mm a");  
+	
 	var li = jQuery('<li></li>');
-	li.text(`${mssg.from}: ${mssg.text}`);
+	li.text(`${mssg.from} ${formattedTime}: ${mssg.text}`);
 	jQuery("#messages").append(li);
 });
 
 socket.on("newUserMssg" , function (mssg) {
 	console.log("New User Connected Message - ", mssg)
 
+	var formattedTime = moment(mssg.createdAt).format("h:mm a");  
+
 	var li = jQuery('<li></li>');
-	li.text(`${mssg.from}: ${mssg.text}`);
+	li.text(`${mssg.from} ${formattedTime}: ${mssg.text}`);
 	jQuery("#messages").append(li);
 });
 
 socket.on("newMessage", function (mssg) {
 	console.log("Recieved this message - ",mssg)
 
+	var formattedTime = moment(mssg.createdAt).format("h:mm a");  
+
 	var li = jQuery('<li></li>');
-	li.text(`${mssg.from}: ${mssg.text}`);
+	li.text(`${mssg.from} ${formattedTime}: ${mssg.text}`);
 	jQuery("#messages").append(li);
 });
 
 socket.on("newLocationMessage", function (mssg) {
 	console.log("Recieved this message - ",mssg)
 
+	var formattedTime = moment(mssg.createdAt).format("h:mm a");  
+
 	var li = jQuery('<li></li>');
 	var a  =jQuery('<a target="_blank"> My current location.</a>');
-	li.text(`${mssg.from}: `);
+	li.text(`${mssg.from} ${formattedTime}:`);
 	a.attr('href', mssg.url);
 	li.append(a);
 	jQuery("#messages").append(li);
