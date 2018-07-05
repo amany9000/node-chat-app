@@ -9,6 +9,20 @@ socket.on("disconnect", function () {
 });
 
 //socket.emit("createMessage",{from : "beta@dipu", text : "Aa gye"});
+function scrollToBottom(){
+	var message = jQuery("#messages");
+	var newMessage = message.children("li:last-child");
+
+	var clientHeight = message.prop("clientHeight");
+	var scrollHeight = message.prop("scrollHeight");
+	var scrollTop = message.prop("scrollTop");
+	var newMessageHeight = newMessage.innerHeight();
+	var lastMessageHeight = newMessage.prev().innerHeight();
+
+	if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+		message.scrollTop(scrollHeight)
+	}
+}
 
 socket.on("welcomeMssg" ,function (mssg) {
 	console.log("Initial Message from sever - " , mssg);
@@ -18,6 +32,7 @@ socket.on("welcomeMssg" ,function (mssg) {
 	var li = jQuery('<li></li>');
 	li.text(`${mssg.from} ${formattedTime}: ${mssg.text}`);
 	jQuery("#messages").append(li);
+	scrollToBottom();
 });
 
 socket.on("newUserMssg" , function (mssg) {
@@ -28,6 +43,7 @@ socket.on("newUserMssg" , function (mssg) {
 	var li = jQuery('<li></li>');
 	li.text(`${mssg.from} ${formattedTime}: ${mssg.text}`);
 	jQuery("#messages").append(li);
+	scrollToBottom();
 });
 
 socket.on("newMessage", function (mssg) {
@@ -38,6 +54,7 @@ socket.on("newMessage", function (mssg) {
 	var li = jQuery('<li></li>');
 	li.text(`${mssg.from} ${formattedTime}: ${mssg.text}`);
 	jQuery("#messages").append(li);
+	scrollToBottom();
 });
 
 socket.on("newLocationMessage", function (mssg) {
@@ -51,6 +68,7 @@ socket.on("newLocationMessage", function (mssg) {
 	a.attr('href', mssg.url);
 	li.append(a);
 	jQuery("#messages").append(li);
+	scrollToBottom();
 });
 
 jQuery("#message-form").on("submit",function (e) {
