@@ -4,7 +4,9 @@ const socketIO = require("socket.io");
 const http = require("http");
 
 const {generateMssg, generateLocationMssg} = require("./utils/message.js");
+const {isCorrectString} = require("./utils/validation.js")
 const publicPath = path.join(__dirname, '../public');
+
 const port = process.env.PORT || 3000;
 var app = express()
 var server = http.createServer(app);
@@ -30,6 +32,14 @@ io.on("connection", (socket) => {
 		callback()
 	});
     
+    socket.on("join", (param,callback) => {
+    	if(!isCorrectString(param.name) || !isCorrectString(param.room)){
+    		callback("Name and Room name aren't correct");
+    		console.log(param)
+    	}
+    	callback();
+    });
+
     socket.on("createLocationMessage", (mssg) => {		
 		socket.broadcast.emit("newLocationMessage",generateLocationMssg("User ",mssg.latitude,mssg.longitude));
 	});
