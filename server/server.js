@@ -17,10 +17,6 @@ app.use(express.static(publicPath));
 io.on("connection", (socket) => {
 	console.log("New User connected");
 	
-	socket.emit("welcomeMssg", generateMssg("admin@sabkaBAAP","Welcome to land of Hope - Russia"));
-
-	socket.broadcast.emit("newUserMssg",generateMssg("admin@sabkaBAAP","New user joined Frands"));
-
 	socket.on("createMessage", (mssg,callback) => {
 		console.log("Message Created  :\n", mssg);
 
@@ -35,8 +31,12 @@ io.on("connection", (socket) => {
     socket.on("join", (param,callback) => {
     	if(!isCorrectString(param.name) || !isCorrectString(param.room)){
     		callback("Name and Room name aren't correct");
-    		console.log(param)
     	}
+    	
+    	socket.join(param.room)
+    	socket.emit("welcomeMssg", generateMssg("admin@sabkaBAAP","Welcome to land of Hope - Russia"));
+
+		socket.broadcast.to(param.room).emit("newUserMssg",generateMssg("admin@sabkaBAAP",`New user - ${param.name} joined, Frands`));
     	callback();
     });
 
