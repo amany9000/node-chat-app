@@ -2,8 +2,8 @@ var socket = io();
 
 socket.on("connect", function () {
 	console.log("Connected to the Server.");
-
 	var params = jQuery.deparam(window.location.search);
+	console.log(params)
 	socket.emit("join", params, function (err){
 		if(err){
 			alert(err);
@@ -45,6 +45,15 @@ socket.on("welcomeMssg" ,function (mssg) {
 	scrollToBottom();
 });
 
+socket.on("updateUserList", function (users){
+	var ol = jQuery("<ol></ol>");
+	users.forEach( function (user){
+		ol.append(jQuery("<li></li>").text(user));
+	});
+
+	jQuery("#users").html(ol);
+});
+
 socket.on("newUserMssg" , function (mssg) {
 	console.log("New User Connected Message - ", mssg)
 
@@ -83,8 +92,10 @@ socket.on("newLocationMessage", function (mssg) {
 jQuery("#message-form").on("submit",function (e) {
 	e.preventDefault();
 	var messageTextBox = jQuery('[name=message]');
+	var params = jQuery.deparam(window.location.search);
+	console.log("useeer",params.user)
 	socket.emit("createMessage",{
-		from : "User",
+		from : params.name,
 		text : messageTextBox.val()
 	}, function () {
 		messageTextBox.val("")
@@ -101,8 +112,9 @@ locationButton.on("click", function () {
 	navigator.geolocation.getCurrentPosition(function (position){
 		
 		locationButton.removeAttr("disabled").text("Send Location");
-		
+		var params = jQuery.deparam(window.location.search);
 		socket.emit('createLocationMessage',{
+			from: params.name,
 			latitude: position.coords.latitude, 
 			longitude: position.coords.longitude, 
 		});

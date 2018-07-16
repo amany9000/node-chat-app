@@ -6,13 +6,14 @@ const http = require("http");
 const {generateMssg, generateLocationMssg} = require("./utils/message.js");
 const {isCorrectString} = require("./utils/validation.js")
 const publicPath = path.join(__dirname, '../public');
-
+const {Users} = require("./utils/users")
 const port = process.env.PORT || 3000;
 var app = express()
 var server = http.createServer(app);
 var io = socketIO(server);
-console.log(generateMssg("test","yessss"));
 app.use(express.static(publicPath));
+
+const users = new Users();
 
 io.on("connection", (socket) => {
 	console.log("New User connected");
@@ -30,10 +31,14 @@ io.on("connection", (socket) => {
     
     socket.on("join", (param,callback) => {
     	if(!isCorrectString(param.name) || !isCorrectString(param.room)){
-    		callback("Name and Room name aren't correct");
+	    	return callback("Name and Room name aren't correct");
     	}
     	
-    	socket.join(param.room)
+    	socket.join(param.room);
+    	users.removeUser(socket.id);
+    	users.addUser(socket.id, param.name, param.room);
+
+    	io.to(param.room).emit("updateUserList", users.getUserList(param.room));
     	socket.emit("welcomeMssg", generateMssg("admin@sabkaBAAP","Welcome to land of Hope - Russia"));
 
 		socket.broadcast.to(param.room).emit("newUserMssg",generateMssg("admin@sabkaBAAP",`New user - ${param.name} joined, Frands`));
@@ -41,10 +46,14 @@ io.on("connection", (socket) => {
     });
 
     socket.on("createLocationMessage", (mssg) => {		
-		socket.broadcast.emit("newLocationMessage",generateLocationMssg("User ",mssg.latitude,mssg.longitude));
+		socket.broadcast.emit("newLocationMessage",generateLocationMssg(mssg.from,mssg.latitude,mssg.longitude));
 	});
 	socket.on("disconnect", () => {
-		console.log("And.... 	He's gone!!!! (diconnected)");
+		var user = users.removeUser(socket.id);
+		if(user){
+			io.to(user.room).emit("updateUserList", users.getUserList(user.room));
+			io.to(user.room).emit("newMessage", generateMssg("admin", `${user.name} has left.`));
+		}
 	});	
 });
 
