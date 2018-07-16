@@ -20,8 +20,8 @@ io.on("connection", (socket) => {
 	
 	socket.on("createMessage", (mssg,callback) => {
 		console.log("Message Created  :\n", mssg);
-
-		socket.broadcast.emit("newMessage",generateMssg(mssg.from,mssg.text));		
+		var user = users.getUser(socket.id);
+		socket.broadcast.to(user.room).emit("newMessage",generateMssg(user.name,mssg.text));		
 		/*
 		io.emit("newMessage",generateMssg(mssg.from,mssg.text));
 		*/
@@ -39,14 +39,15 @@ io.on("connection", (socket) => {
     	users.addUser(socket.id, param.name, param.room);
 
     	io.to(param.room).emit("updateUserList", users.getUserList(param.room));
-    	socket.emit("welcomeMssg", generateMssg("admin@sabkaBAAP","Welcome to land of Hope - Russia"));
+    	socket.emit("welcomeMssg", generateMssg("admin","Welcome to land of Hope - Russia"));
 
 		socket.broadcast.to(param.room).emit("newUserMssg",generateMssg("admin@sabkaBAAP",`New user - ${param.name} joined, Frands`));
     	callback();
     });
 
     socket.on("createLocationMessage", (mssg) => {		
-		socket.broadcast.emit("newLocationMessage",generateLocationMssg(mssg.from,mssg.latitude,mssg.longitude));
+		var user = users.getUser(socket.id);
+		socket.broadcast.to(user.room).emit("newLocationMessage",generateLocationMssg(user.name,mssg.latitude,mssg.longitude));
 	});
 	socket.on("disconnect", () => {
 		var user = users.removeUser(socket.id);
